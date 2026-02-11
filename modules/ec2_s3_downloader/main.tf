@@ -1,8 +1,3 @@
-# --- Data Sources remains the same ---
-# data "aws_region" "current" {
-
-# }
-
 data "aws_ami" "amazon_linux" {
   owners      = ["amazon"]
   most_recent = true
@@ -84,15 +79,10 @@ resource "aws_iam_instance_profile" "profile" {
 # --- 3. Compute: No key_name used ---
 resource "aws_instance" "this" {
   ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = "t2.nano"
+  instance_type          = "t3.micro"
   subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.ssm_only.id]
   iam_instance_profile   = aws_iam_instance_profile.profile.name
-
-  # Even if this is false, SSM still works via the VPC Endpoint!
-  associate_public_ip_address = true
-
-  # key_name IS REMOVED
 
   user_data = <<-EOF
     #!/bin/bash
